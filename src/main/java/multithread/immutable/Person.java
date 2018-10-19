@@ -1,4 +1,4 @@
-package multithread.immutable.immutable;
+package multithread.immutable;
 
 /**
  * @Author Ryan

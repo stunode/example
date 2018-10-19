@@ -1,5 +1,6 @@
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import java.util.concurrent.*;
 
 /**
  * @Author Ryan
@@ -9,11 +10,23 @@ import java.util.concurrent.Executors;
 public class SimpleExctorService {
 
     public static void main(String[] args) {
-        ExecutorService es = Executors.newCachedThreadPool();
-        for (int i = 0; i < 10; i++) {
-            es.submit(() -> {
-                System.out.println("this is test");
-            });
-        }
+
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder ()
+                .setNameFormat("myTest-pool-%d").build();
+            ExecutorService service = new ThreadPoolExecutor (20, 200,
+                    60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable> (1024),namedThreadFactory);
+            service.execute (()->{
+            System.out.println (Thread.currentThread ().getName ());
+        });
+
+        service.execute (()->{
+            System.out.println (Thread.currentThread ().getName ());
+        });
+
+        service.execute (()->{
+            System.out.println (Thread.currentThread ().getName ());
+        });
     }
 }
+
+
