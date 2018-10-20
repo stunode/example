@@ -129,6 +129,29 @@ public class BlockRecord {
     @XmlElement
     public void setGRx(String D){this.Rx = D;}
 
+    @Override
+    public String toString() {
+        return "BlockRecord{" +
+                "SHA256String='" + SHA256String + '\'' +
+                ", SignedSHA256='" + SignedSHA256 + '\'' +
+                ", BlockID='" + BlockID + '\'' +
+                ", VerificationProcessID='" + VerificationProcessID + '\'' +
+                ", CreatingProcess='" + CreatingProcess + '\'' +
+                ", PreviousHash='" + PreviousHash + '\'' +
+                ", Fname='" + Fname + '\'' +
+                ", Lname='" + Lname + '\'' +
+                ", SSNum='" + SSNum + '\'' +
+                ", DOB='" + DOB + '\'' +
+                ", Diag='" + Diag + '\'' +
+                ", Treat='" + Treat + '\'' +
+                ", Rx='" + Rx + '\'' +
+                ", SignedBlockID='" + SignedBlockID + '\'' +
+                ", Seed='" + Seed + '\'' +
+                ", TimeStampString='" + TimeStampString + '\'' +
+                ", TimeStamp=" + TimeStamp +
+                '}';
+    }
+
     /* Token indexes for input: */
     private static final int iFNAME = 0;
     private static final int iLNAME = 1;
@@ -246,6 +269,7 @@ public class BlockRecord {
 
 
     // 根据输入的文本 按行 生成 BlockRecord
+    @Deprecated
     public static BlockRecord createBlock(String text,String pid){
         BlockRecord blockRecord = new BlockRecord ();
         blockRecord.setACreatingProcess (pid);

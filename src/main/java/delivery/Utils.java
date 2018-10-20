@@ -74,37 +74,6 @@ public class Utils {
         return builder.toString();
     }
 
-    // 判断 前16bits 小于5000时，认为解出难题
-    public static BlockPuzzleResult solvePuzzle(String text){
-        BlockPuzzleResult blockPuzzleResult = new BlockPuzzleResult ();
-        try {
-            MessageDigest MD = MessageDigest.getInstance("SHA-256");
-            while (true) {
-                String randString = randomAlphaNumeric (8);
-                String concatString = text + randString;
-                byte[] bytesHash = MD.digest (concatString.getBytes ("UTF-8")); // Get the hash value
-                String hashString = DatatypeConverter.printHexBinary (bytesHash); // Turn into a string of hex values
-                int workNumber = Integer.parseInt (hashString.substring (0, 4), 16); // Between 0000 (0) and FFFF (65535)
-                System.out.println ("Hash is: " + hashString);
-                System.out.println ("First 16 bits " + hashString.substring (0, 4) + ": " + workNumber + "\n");
-                if (workNumber < 5000) {
-                    System.out.println ("Puzzle solved!");
-                    System.out.println ("The seed was: " + randString);
-                    blockPuzzleResult.setRandString (randString);
-                    blockPuzzleResult.setBytesHash (bytesHash);
-                    String temp = Base64.getEncoder ().encodeToString (bytesHash);
-                    blockPuzzleResult.setHashString (temp);
-                    // 添加blockId
-                    String suuid = UUID.randomUUID ().toString ();
-                    System.out.println ("Unique Block ID: " + suuid + "\n");
-                    blockPuzzleResult.setBlockId (suuid);
-                    return blockPuzzleResult;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace ();
-            return null;
-        }
-    }
+
 
 }
