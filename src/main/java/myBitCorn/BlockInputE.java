@@ -49,6 +49,8 @@ https://www.mkyong.com/java/jaxb-hello-world-example/
 */
 
 /* CDE: The JAXB libraries: */
+import delivery.BlockRecord;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;

@@ -165,14 +165,12 @@ class UnverifiedBlockConsumer implements Runnable {
                             + Integer.toString(ThreadLocalRandom.current().nextInt(100,1000)) + "]\n";
                     System.out.println(fakeVerifiedBlock);
                     String tempblockchain = fakeVerifiedBlock + bc.blockchain; // add the verified block to the chain
-//                    for(int i=0; i < bc.numProcesses; i++){ // send to each process in group, including us:
-//                        sock = new Socket(bc.serverName, Ports.BlockchainServerPortBase + (i * 1000));
-                    sock = new Socket(bc.serverName, Ports.BlockchainServerPortBase );
-
-                    toServer = new PrintStream(sock.getOutputStream());
+                    for(int i=0; i < bc.numProcesses; i++){ // send to each process in group, including us:
+                        sock = new Socket(bc.serverName, Ports.BlockchainServerPortBase + (i * 1000));
+                        toServer = new PrintStream(sock.getOutputStream());
                         toServer.println(tempblockchain); toServer.flush(); // make the multicast
                         sock.close();
-//                    }
+                    }
                 }
                 Thread.sleep(1500); // For the example, wait for our blockchain to be updated before processing a new block
             }
@@ -227,36 +225,30 @@ public class bc {
         PrintStream toServer;
 
         try{
-//            for(int i=0; i< numProcesses; i++){// Send our key to all servers.
-//                sock = new Socket(serverName, Ports.KeyServerPortBase + (i * 1000));
-            sock = new Socket(serverName, Ports.KeyServerPortBase );
-
-            toServer = new PrintStream(sock.getOutputStream());
+            for(int i=0; i< numProcesses; i++){// Send our key to all servers.
+                sock = new Socket(serverName, Ports.KeyServerPortBase + (i * 1000));
+                toServer = new PrintStream(sock.getOutputStream());
                 toServer.println("FakeKeyProcess" + bc.PID); toServer.flush();
                 sock.close();
-//            }
+            }
             Thread.sleep(1000); // wait for keys to settle, normally would wait for an ack
             //Fancy arithmetic is just to generate identifiable blockIDs out of numerical sort order:
             String fakeBlockA = "(Block#" + Integer.toString(((bc.PID+1)*10)+4) + " from P"+ bc.PID + ")";
             String fakeBlockB = "(Block#" + Integer.toString(((bc.PID+1)*10)+3) + " from P"+ bc.PID + ")";
-//            for(int i=0; i< numProcesses; i++){// Send a sample unverified block A to each server
-//                sock = new Socket(serverName, Ports.UnverifiedBlockServerPortBase + (i * 1000));
-            sock = new Socket(serverName, Ports.UnverifiedBlockServerPortBase );
-
-            toServer = new PrintStream(sock.getOutputStream());
+            for(int i=0; i< numProcesses; i++){// Send a sample unverified block A to each server
+                sock = new Socket(serverName, Ports.UnverifiedBlockServerPortBase + (i * 1000));
+                toServer = new PrintStream(sock.getOutputStream());
                 toServer.println(fakeBlockA);
                 toServer.flush();
                 sock.close();
-//            }
-//            for(int i=0; i< numProcesses; i++){// Send a sample unverified block B to each server
-//                sock = new Socket(serverName, Ports.UnverifiedBlockServerPortBase + (i * 1000));
-            sock = new Socket(serverName, Ports.UnverifiedBlockServerPortBase );
-
-            toServer = new PrintStream(sock.getOutputStream());
+            }
+            for(int i=0; i< numProcesses; i++){// Send a sample unverified block B to each server
+                sock = new Socket(serverName, Ports.UnverifiedBlockServerPortBase + (i * 1000));
+                toServer = new PrintStream(sock.getOutputStream());
                 toServer.println(fakeBlockB);
                 toServer.flush();
                 sock.close();
-//            }
+            }
         }catch (Exception x) {x.printStackTrace ();}
     }
 
@@ -272,7 +264,7 @@ public class bc {
         new Thread(new PublicKeyServer()).start(); // New thread to process incoming public keys
         new Thread(new UnverifiedBlockServer(queue)).start(); // New thread to process incoming unverified blocks
         new Thread(new BlockchainServer()).start(); // New thread to process incomming new blockchains
-        try{Thread.sleep(1000);}catch(Exception e){} // Wait for servers to start.
+        try{Thread.sleep(10000);}catch(Exception e){} // Wait for servers to start. 等待其他几个进程的server启动
         new bc().MultiSend(); // Multicast some new unverified blocks out to all servers as data
         try{Thread.sleep(1000);}catch(Exception e){} // Wait for multicast to fill incoming queue for our example.
 

@@ -40,8 +40,46 @@ public class BlockRecord {
     String Treat;
     String Rx;
 
-      /* Examples of accessors for the BlockRecord fields. Note that the XML tools sort the fields alphabetically
-     by name of accessors, so A=header, F=Indentification, G=Medical: */
+    String SignedBlockID;
+    String Seed;
+    String TimeStampString;
+    long TimeStamp;
+
+    @XmlElement
+    public String getTimeStampString() {
+        return TimeStampString;
+    }
+
+    public void setTimeStampString(String timeStampString) {
+        TimeStampString = timeStampString;
+    }
+
+    @XmlElement
+    public long getTimeStamp() {
+        return TimeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        TimeStamp = timeStamp;
+    }
+
+    @XmlElement
+    public String getSignedBlockID() {
+        return SignedBlockID;
+    }
+
+    public void setSignedBlockID(String signedBlockID) {
+        SignedBlockID = signedBlockID;
+    }
+
+    @XmlElement
+    public String getSeed() {
+        return Seed;
+    }
+
+    public void setSeed(String seed) {
+        this.Seed = seed;
+    }
 
     public String getASHA256String() {return SHA256String;}
     @XmlElement
@@ -99,6 +137,7 @@ public class BlockRecord {
     private static final int iDIAG = 4;
     private static final int iTREAT = 5;
     private static final int iRX = 6;
+    private static String XMLHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
     public static String blockChainFromSource(String filePath ) {
 
@@ -176,13 +215,43 @@ public class BlockRecord {
         }
     }
 
+    // blockRecord 转换 stirng
+    public static String converRecord2XmlStr(BlockRecord record) {
+        StringWriter sw = new StringWriter ();
+        JAXBContext jaxbContext = null;
+        String result = null;
+        try {
+            jaxbContext = JAXBContext.newInstance(BlockRecord.class);
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+            jaxbMarshaller.marshal (record,sw);
+            result = sw.toString ();
+            result = result.replace(XMLHeader, "");
+            System.out.println (result);
+        } catch (Exception e) {
+            e.printStackTrace ();
+        } finally {
+            return result;
+        }
+    }
+
+    public static void main(String[] args) {
+        BlockRecord record = new BlockRecord ();
+        record.setACreatingProcess ("test");
+        String result = converRecord2XmlStr (record);
+        System.out.println (result);
+        BlockRecord record1 = convertFromXML (result, BlockRecord.class);
+        System.out.println (record1);
+    }
+
 
 
     // 根据输入的文本 按行 生成 BlockRecord
-    public static BlockRecord createBlock(String text){
+    public static BlockRecord createBlock(String text,String pid){
         BlockRecord blockRecord = new BlockRecord ();
-//        String suuid = UUID.randomUUID ().toString ();
-//        blockRecord.setABlockID(suuid);
+        blockRecord.setACreatingProcess (pid);
+        //TODO 私钥加密
+        String suuid = UUID.randomUUID ().toString ();
+        blockRecord.setABlockID(suuid);
         String[] tokens = text.split (" +");
         blockRecord.setFSSNum(tokens[iSSNUM]);
         blockRecord.setFFname(tokens[iFNAME]);
@@ -221,10 +290,5 @@ public class BlockRecord {
         }
     }
 
-    public static void main(String[] args) {
-        String result = blockChainFromSource ("E:\\code\\example\\src\\main\\java\\delivery\\BlockInput0.txt");
-        System.out.println (result);
-        String text = getSHA256 (result);
-        System.out.println (text);
-    }
+
 }

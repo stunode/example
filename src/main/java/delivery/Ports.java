@@ -24,8 +24,8 @@ public class Ports {
     public static int BlockchainServerPort;
 
     public static void setPorts(int PID) {
-        KeyServerPort = KeyServerPortBase + (PID );
-        UnverifiedBlockServerPort = UnverifiedBlockServerPortBase + (PID );
-        BlockchainServerPort = BlockchainServerPortBase + (PID );
+        KeyServerPort = KeyServerPortBase + (PID * 1000);
+        UnverifiedBlockServerPort = UnverifiedBlockServerPortBase + (PID * 1000);
+        BlockchainServerPort = BlockchainServerPortBase + (PID * 1000);
     }
 }

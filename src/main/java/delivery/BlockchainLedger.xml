@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<BlockLedger>
+    <blockRecord>
+        <ABlockID>9365307b-c611-460c-a766-46dad53b18c5</ABlockID>
+        <ACreatingProcess> </ACreatingProcess>
+        <ASHA256String> </ASHA256String>
+        <ASignedSHA256> </ASignedSHA256>
+        <AVerificationProcessID> </AVerificationProcessID>
+        <FDOB>1998.03.07</FDOB>
+        <FFname>Johnn</FFname>
+        <FLname>Smithh</FLname>
+        <FSSNum>123-45-6789</FSSNum>
+        <GDiag>Chickenpoxx</GDiag>
+        <GRx>aspirinn</GRx>
+        <GTreat>BedRestt</GTreat>
+    </blockRecord>
+</BlockLedger>
