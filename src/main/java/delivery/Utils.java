@@ -1,8 +1,13 @@
 package delivery;
 
+import sun.misc.BASE64Decoder;
+
 import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -55,12 +60,19 @@ public class Utils {
 
         KeyPair keyPair = generateKeyPair (9);
         PublicKey publicKey = keyPair.getPublic ();
-        PrivateKey privateKey = keyPair.getPrivate ();
-        String data = "abcdefg123456";
-        byte[] datasbytes = data.getBytes ();
-        byte[] signDataBytes = signData (datasbytes, privateKey);
-        boolean verify = verifySig (datasbytes, publicKey, signDataBytes);
-        System.out.println (verify);
+
+        byte[] key = publicKey.getEncoded ();
+        String keyStr = Base64.getEncoder ().encodeToString (key);
+        PublicKey publicKey1 =  getPublicKey (keyStr);
+        System.out.println (publicKey.equals (publicKey1));
+
+        String testString = "thisistestString";
+        byte[] signDataByte = signData (testString.getBytes (),keyPair.getPrivate ());
+        String signStr = Base64.getEncoder ().encodeToString (signDataByte);
+        // 解密
+        boolean result = Utils.verifySig (testString.getBytes (), publicKey1,Base64.getDecoder ().decode (signStr));
+        System.out.println (result);
+
     }
 
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -74,6 +86,23 @@ public class Utils {
         return builder.toString();
     }
 
-
+    // 64 编码的publicKey String转换为PublicKey对象
+    public static PublicKey getPublicKey(String key) {
+        try {
+            byte[] keyBytes;
+            keyBytes = (new BASE64Decoder ()).decodeBuffer(key);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec (keyBytes);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = keyFactory.generatePublic(keySpec);
+            return publicKey;
+        } catch (IOException e) {
+            e.printStackTrace ();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace ();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace ();
+        }
+        return null;
+    }
 
 }
