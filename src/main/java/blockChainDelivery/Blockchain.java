@@ -1,3 +1,4 @@
+//package blockChainDelivery;
 import sun.misc.BASE64Decoder;
 
 import javax.xml.bind.*;
@@ -12,6 +13,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class Blockchain {
@@ -42,11 +44,10 @@ public class Blockchain {
 
     private static LinkedList<BlockRecord> blockChain = new LinkedList<> ();
 
-    private static  final  ThreadLocal<Boolean> trrigerFlag = new ThreadLocal<> ();
+    private static volatile boolean trrigerFlag = false;
     public static void main(String[] args) throws Exception {
 
 
-        trrigerFlag.set (false);
         BlockRecordPriorityComparator comparator = new BlockRecordPriorityComparator ();
 
         NON_VERIFY_QUEUE = new PriorityBlockingQueue<BlockRecord> (20, comparator);
@@ -63,7 +64,7 @@ public class Blockchain {
         System.out.println ("Using processID " + PID + "\n");
 
         if (PID == 2) {
-            trrigerFlag.set (true);
+            trrigerFlag=true;
         }
 
         //initial blockinput filename
@@ -106,7 +107,7 @@ public class Blockchain {
 
                             // pid ==2 trriger
                             if(getKey.getPID ()==2){
-                                trrigerFlag.set (true);
+                                trrigerFlag=true;
                             }
 
                             pidKeyList.add (getKey);
@@ -197,9 +198,11 @@ public class Blockchain {
         }
 
         // judge trigger flag
-        while (trrigerFlag.get ()) {
-            MultiSend ();
-            break;
+        while (true) {
+            if(trrigerFlag == true) {
+                MultiSend ();
+                break;
+            }
         }
 
 
@@ -277,16 +280,18 @@ public class Blockchain {
     // generate a fake first block record for blockChain
     private static BlockRecord getFristBlock(){
         BlockRecord firstRecord = new BlockRecord ();
-        firstRecord.setSHA256String ("abcdef");
-        firstRecord.setBlockID ("123");
+        firstRecord.setSHA256String ("63b95d9c17799463acb7d37c85f255a511f23d7588d871375d0119ba4a96a");
+        firstRecord.setBlockID ("UUID");
         firstRecord.setBlockNum (1);
-        firstRecord.setDiag ("test");
-        firstRecord.setFname ("test");
-        firstRecord.setLname ("test");
-        firstRecord.setTreat ("test");
-        firstRecord.setRx ("test");
-        firstRecord.setDOB ("test");
+        firstRecord.setDiag ("Measels");
+        firstRecord.setFname ("Joseph");
+        firstRecord.setLname ("Ng");
+        firstRecord.setTreat ("Bedrest");
+        firstRecord.setRx ("aspirin");
+        firstRecord.setDOB ("1995.06.22");
+        firstRecord.setSSNum ("987-65-4321");
         firstRecord.setVerificationProcessID ("1");
+        firstRecord.setSignedBlockID ("0");
         return firstRecord;
     }
     /* Token indexes for input: */
